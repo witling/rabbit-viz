@@ -2,7 +2,6 @@ import * as React from 'react';
 import { UnControlled as CodeMirror } from 'react-codemirror2';
 
 import { ClusterDefinitionContext } from '../store/Contexts';
-import SampleDefinition from '../data/sampleDefinition.json';
 import LoadPanel from './LoadPanel';
 
 // tslint:disable-next-line:no-var-requires

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import { Button, Icon, Input } from 'semantic-ui-react';
 import Axios, { AxiosInstance } from 'axios';
-import { ClusterDefinitionContext } from '../store/Contexts';
 import cookies from 'react-cookies'
 
 type ReloadFunction = (value: string) => void;

@@ -5,7 +5,6 @@ import DefinitionsEditor from '../components/DefinitionsEditor';
 import DefinitionsGraph from '../components/DefinitionsGraph';
 import GraphToolbar from '../components/GraphToolbar';
 import Header from '../components/Header';
-import LoadPanel from '../components/LoadPanel';
 import AppStateStore from '../store/AppStateStore';
 
 const App = () => (
