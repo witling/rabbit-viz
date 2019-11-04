@@ -1,5 +1,5 @@
 import * as React from 'react';
-import 'axios';
+import { Button, Input } from 'semantic-ui-react';
 import Axios, { AxiosInstance } from 'axios';
 import { ClusterDefinitionContext } from '../store/Contexts';
 import cookies from 'react-cookies'
@@ -118,11 +118,11 @@ class LoadPanel extends React.Component<{}, ILoadPanelState> {
             <ClusterDefinitionContext.Consumer>
                 {clusterDefinition => (
                     <form>
-                        <input type="text" name="host" onChange={this.handleChange} value={this.state.host} placeholder="Hostname (address:port)" />
-                        <input type="text" name="username" onChange={this.handleChange} value={this.state.username} placeholder="Username" />
-                        <input type="password" name="password" onChange={this.handleChange} value={this.state.password} placeholder="Password" />
-                        <input type="submit" value="Connect" onClick={this.handleConnect} />
-                        <input type="submit" value="Reload" onClick={this.handleReload(clusterDefinition.validate)} />
+                        <Input name="host" onChange={this.handleChange} value={this.state.host} placeholder="Hostname (address:port)" />
+                        <Input name="username" onChange={this.handleChange} value={this.state.username} placeholder="Username" />
+                        <Input name="password" onChange={this.handleChange} value={this.state.password} placeholder="Password" />
+                        <Button content="Connect" onClick={this.handleConnect} secondary/>
+                        <Button content="Reload" onClick={this.handleReload(clusterDefinition.validate)} primary/>
                     </form>
                 )}
             </ClusterDefinitionContext.Consumer>
