@@ -5,6 +5,7 @@ import DefinitionsEditor from '../components/DefinitionsEditor';
 import DefinitionsGraph from '../components/DefinitionsGraph';
 import GraphToolbar from '../components/GraphToolbar';
 import Header from '../components/Header';
+import LoadPanel from '../components/LoadPanel';
 import AppStateStore from '../store/AppStateStore';
 
 const App = () => (
@@ -18,7 +19,7 @@ const App = () => (
             <DefinitionsGraph />
           </Grid.Column>
           <Grid.Column width={4} style={{ padding: 0, marginTop: '4.5em', marginBottom: '2.5em'}}>
-            <DefinitionsEditor />
+            <LoadPanel />
           </Grid.Column>
         </Grid.Row>
       </Grid>
