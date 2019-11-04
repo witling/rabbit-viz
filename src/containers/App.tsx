@@ -12,14 +12,14 @@ const App = () => (
   <AppStateStore>
     <Header />
     <Container fluid={true}>
-      <Grid style={{height: '100vh'}} centered={true} celled="internally">
+      <Grid style={{ height: '100vh' }} centered={true} celled="internally">
         <Grid.Row style={{ height: '100%' }}>
-          <Grid.Column width={12} style={{ padding: 0, marginTop: '4.5em', marginBottom: '2.5em'}} className="srd-container">
+          <Grid.Column width={12} style={{ padding: 0, marginTop: '4.5em', marginBottom: '2.5em' }} className="srd-container">
             <GraphToolbar />
             <DefinitionsGraph />
           </Grid.Column>
-          <Grid.Column width={4} style={{ padding: 0, marginTop: '4.5em', marginBottom: '2.5em'}}>
-            <LoadPanel />
+          <Grid.Column width={4} style={{ padding: 0, marginTop: '4.5em', marginBottom: '2.5em' }}>
+            <DefinitionsEditor />
           </Grid.Column>
         </Grid.Row>
       </Grid>
@@ -27,7 +27,7 @@ const App = () => (
     <Menu fixed="bottom" inverted={true}>
       <Menu.Item header={true} position="right">
         © 2019 Plex Systems, Inc. All Rights Reserved.
-      </Menu.Item>          
+      </Menu.Item>
     </Menu>
   </AppStateStore>
 );
