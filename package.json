@@ -1,8 +1,8 @@
 {
   "name": "rabbit-viz",
-  "version": "1.0.0",
-  "homepage": "https://plexsystems.github.io/rabbit-viz/",
-  "repository": "https://github.com/plexsystems/rabbit-viz",
+  "version": "1.0.1",
+  "homepage": "https://witling.github.io/rabbit-viz/",
+  "repository": "https://github.com/witling/rabbit-viz",
   "dependencies": {
     "axios": "^0.19.0",
     "codemirror": "^5.49.2",
