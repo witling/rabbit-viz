@@ -2,9 +2,11 @@ import produce from 'immer';
 import { DefaultLinkModel, DefaultNodeModel, DiagramEngine, DiagramModel, LinkModel } from "storm-react-diagrams";
 import { distributeElements } from "../helpers/dagre-utils";
 import { IViewState } from "./ViewState";
+import { IConsumer, IConnectionState } from './Connection';
 
 const exchangeColor = "rgb(0,192,255)";
 const queueColor = "rgb(192,255,0)";
+const serviceColor = "rgb(153,0,147)";
 
 export interface IVhost {
   name: string;
@@ -15,16 +17,16 @@ export interface IPolicy {
   name: string;
   pattern: string;
   "apply-to": string;
-  definition: { [parameter: string] : {value: any}};
+  definition: { [parameter: string]: { value: any } };
   priority: number;
 }
 
 export interface IQueue {
   name: string;
   vhost: string;
-  durable: boolean;
-  auto_delete: boolean;
-  arguments: object;
+  durable?: boolean;
+  auto_delete?: boolean;
+  arguments?: object;
 }
 
 export interface IExchange {
@@ -73,30 +75,29 @@ interface IBindingCollection {
 const state: IClusterDefinition = {
   definition: {
     bindings: [],
-    exchanges: [],      
+    exchanges: [],
     parameters: [],
     policies: [],
     queues: [],
     vhosts: []
   },
   isValid: true,
-  validate: (editor: any, data: any, value: string) => null
+  validate: (editor: any, data: any, value: string) => null,
 };
 
-export function createDefaultClusterDefinition() : IClusterDefinition {
+export function createDefaultClusterDefinition(): IClusterDefinition {
   return produce<IClusterDefinition>(state, draft => {
     draft.isValid = true;
   });
 }
 
-export function clusterDefinitionToDagModel(definition: IDefinition, viewState: IViewState, engine: DiagramEngine) : DiagramModel {
+export function clusterDefinitionToDagModel(definition: IDefinition, viewState: IViewState, engine: DiagramEngine, connectionState: IConnectionState): DiagramModel {
   const exchangeNodes: DefaultNodeModel[] = [];
   const queueNodes: DefaultNodeModel[] = [];
   const nodeLinks: LinkModel[] = [];
   const model = new DiagramModel();
 
   const bindings = definition.bindings.filter(b => viewState.currentVhost === "All" || b.vhost === viewState.currentVhost);
-
   const dedupedBindings = bindings.length > 0 ? deduplicateBindings(bindings) : [];
 
   dedupedBindings.forEach(binding => {
@@ -104,7 +105,7 @@ export function clusterDefinitionToDagModel(definition: IDefinition, viewState: 
     const outNodeName = `Exchange: ${binding.source} ${viewState.currentVhost === "All" ? `(${vhost})` : ""}`;
     let outNode = exchangeNodes.find(e => e.name === outNodeName);
 
-    if(outNode === undefined) {
+    if (outNode === undefined) {
       outNode = createNode(outNodeName, exchangeColor);
       exchangeNodes.push(outNode);
     }
@@ -112,11 +113,11 @@ export function clusterDefinitionToDagModel(definition: IDefinition, viewState: 
     let inNode: DefaultNodeModel | undefined;
     let inNodeName: string;
 
-    if(binding.destinationType === "queue") {
+    if (binding.destinationType === "queue") {
       inNodeName = `Queue: ${binding.destination} ${viewState.currentVhost === "All" ? `(${vhost})` : ""}`;
       inNode = queueNodes.find(q => q.name === inNodeName);
 
-      if(inNode === undefined) {
+      if (inNode === undefined) {
         inNode = createNode(inNodeName, queueColor);
         queueNodes.push(inNode);
       }
@@ -125,7 +126,7 @@ export function clusterDefinitionToDagModel(definition: IDefinition, viewState: 
       inNodeName = `Exchange: ${binding.destination} ${viewState.currentVhost === "All" ? `(${vhost})` : ""}`;
       inNode = exchangeNodes.find(q => q.name === inNodeName);
 
-      if(inNode === undefined) {
+      if (inNode === undefined) {
         inNode = createNode(inNodeName, exchangeColor);
         exchangeNodes.push(inNode);
       }
@@ -138,10 +139,34 @@ export function clusterDefinitionToDagModel(definition: IDefinition, viewState: 
     link.setSourcePort(outPort);
     link.setTargetPort(inPort);
 
-    if(viewState.showRoutingKeys) {
+    if (viewState.showRoutingKeys) {
       binding.routingKeys.forEach(key => link.addLabel(key));
     }
-    
+
+    if (viewState.showConnections && binding.destinationType === 'queue') {
+      connectionState.consumers
+        .filter(s => s.queue.name === binding.destination)
+        .forEach(service => {
+          if (inNode === undefined) {
+            return;
+          }
+
+          const node = createNode(service.channel_details.name, serviceColor);
+          node.x = 300;
+          node.y = 200;
+
+          const inPort = node.addInPort('In');
+          const outPort = inNode.getOutPorts().length > 0 ? inNode.getOutPorts()[0] : inNode.addOutPort('Out');
+
+          const link = inPort.createLinkModel();
+          link.setSourcePort(outPort);
+          link.setTargetPort(inPort);
+
+          model.addNode(node);
+          model.addLink(link);
+        });
+    }
+
     nodeLinks.push(link);
   });
 
@@ -149,12 +174,12 @@ export function clusterDefinitionToDagModel(definition: IDefinition, viewState: 
   let inOutIndex = 1;
 
   exchangeNodes.forEach(node => {
-    if(node.getInPorts().length > 0 && node.getOutPorts().length > 0){
+    if (node.getInPorts().length > 0 && node.getOutPorts().length > 0) {
       node.x = 300;
       node.y = inOutIndex * 70;
-      inOutIndex++; 
+      inOutIndex++;
     }
-    else{
+    else {
       node.x = 70;
       node.y = outIndex * 70;
       outIndex++;
@@ -175,18 +200,18 @@ export function clusterDefinitionToDagModel(definition: IDefinition, viewState: 
   return getDistributedModel(engine, model);
 }
 
-function deduplicateBindings(bindings: IBinding[]) : IBindingCollection[] {
+function deduplicateBindings(bindings: IBinding[]): IBindingCollection[] {
   const result: IBindingCollection[] = [];
 
   bindings.forEach(current => {
     const idx = result.findIndex(b => {
-      return b.vhost === current.vhost && 
-        b.source === current.source && 
+      return b.vhost === current.vhost &&
+        b.source === current.source &&
         b.destination === current.destination &&
         b.destinationType === current.destination_type;
     });
 
-    if(idx === -1) {
+    if (idx === -1) {
       result.push({
         destination: current.destination,
         destinationType: current.destination_type,
@@ -196,7 +221,7 @@ function deduplicateBindings(bindings: IBinding[]) : IBindingCollection[] {
       });
     }
     else {
-      if(current.routing_key !== "") {
+      if (current.routing_key !== "") {
         result[idx].routingKeys.push(current.routing_key);
       }
     }
@@ -205,11 +230,11 @@ function deduplicateBindings(bindings: IBinding[]) : IBindingCollection[] {
   return result;
 }
 
-function createNode(name: string, color: string = "rgb(0,192,255)") : DefaultNodeModel {
-	return new DefaultNodeModel(name, color);
+function createNode(name: string, color: string = "rgb(0,192,255)"): DefaultNodeModel {
+  return new DefaultNodeModel(name, color);
 }
 
-function getDistributedModel(engine: DiagramEngine, model: DiagramModel) : DiagramModel {
+function getDistributedModel(engine: DiagramEngine, model: DiagramModel): DiagramModel {
   const distributedDiagram = distributeElements(model.serializeDiagram());
 
   const deserializedModel = new DiagramModel();

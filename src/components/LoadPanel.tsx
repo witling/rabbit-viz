@@ -2,6 +2,8 @@ import * as React from 'react';
 import { Button, Icon, Input } from 'semantic-ui-react';
 import Axios, { AxiosInstance } from 'axios';
 import cookies from 'react-cookies'
+import { ClusterDefinitionContext, ConnectionStateContext } from '../store/Contexts';
+import { IConsumer, IConnectionState, createDefaultConnectionState } from '../store/Connection';
 
 type ReloadFunction = (value: string) => void;
 
@@ -12,9 +14,10 @@ interface ILoadPanelState {
     host: string,
     username: string,
     password: string,
+    connectionState: IConnectionState,
 }
 
-class LoadPanel extends React.Component<{ reloadCallback: ReloadFunction }, ILoadPanelState> {
+class LoadPanel extends React.Component<{}, ILoadPanelState> {
 
     constructor(props) {
         super(props);
@@ -30,6 +33,7 @@ class LoadPanel extends React.Component<{ reloadCallback: ReloadFunction }, ILoa
             host,
             username,
             password,
+            connectionState: createDefaultConnectionState(),
         };
 
         this.handleChange = this.handleChange.bind(this);
@@ -63,33 +67,31 @@ class LoadPanel extends React.Component<{ reloadCallback: ReloadFunction }, ILoa
         }
     }
 
-    reload() {
-        setTimeout(() => {
-            if (this.state.apiClient === null) {
-                return;
-            }
-            const onReload = this.state.onReload;
-            this.state.apiClient
-                .request({ method: 'get', url: 'definitions' })
-                .then(result => {
-                    console.log(result.request.response);
-                    onReload(result.data);
-                })
-                .catch(err => {
-                    console.log(err);
-                });
-        }, 50);
-    }
+    async reload(): Promise<any[]> {
+        if (this.state.apiClient === null) {
+            return [];
+        }
+
+        const definition = await this.state.apiClient.request({ method: 'get', url: 'definitions' });
+        const consumers = await this.state.apiClient.request({ method: 'get', url: 'consumers' });
+
+        return [definition.request.response, consumers.data as IConsumer[]];
+    };
 
     handleConnect = e => {
         e.preventDefault();
         this.connect();
     };
 
-    handleReload = e => {
-        e.preventDefault();
-        this.reload();
-    };
+    handleReload = (updateCluster, updateConsumer) => {
+        return async e => {
+            e.preventDefault();
+            const [definition, consumers] = await this.reload();
+
+            updateCluster(null, null, definition);
+            updateConsumer(consumers);
+        };
+    }
 
     handleChange = e => {
         const name = e.target.name;
@@ -114,29 +116,37 @@ class LoadPanel extends React.Component<{ reloadCallback: ReloadFunction }, ILoa
 
     public render() {
         return (
-            <form>
-                <Input
-                    name="host"
-                    label="Host"
-                    placeholder="Hostname (address:port)"
-                    onChange={this.handleChange}
-                    value={this.state.host} /><br />
-                <Input
-                    name="username"
-                    label="Username"
-                    placeholder="Username"
-                    onChange={this.handleChange}
-                    value={this.state.username} />
-                <Input
-                    type="password"
-                    name="password"
-                    label="Password"
-                    placeholder="Password"
-                    onChange={this.handleChange}
-                    value={this.state.password} /><br />
-                <Button onClick={this.handleConnect} secondary><Icon name={this.state.isConnected ? 'check' : 'ban'} /> Connect</Button>
-                <Button content="Reload" onClick={this.handleReload} primary />
-            </form>
+            <ClusterDefinitionContext.Consumer>
+                {clusterDefinition => (
+                    <ConnectionStateContext.Consumer>
+                        {connectionState => (
+                            <form>
+                                <Input
+                                    name="host"
+                                    label="Host"
+                                    placeholder="Hostname (address:port)"
+                                    onChange={this.handleChange}
+                                    value={this.state.host} /><br />
+                                <Input
+                                    name="username"
+                                    label="Username"
+                                    placeholder="Username"
+                                    onChange={this.handleChange}
+                                    value={this.state.username} />
+                                <Input
+                                    type="password"
+                                    name="password"
+                                    label="Password"
+                                    placeholder="Password"
+                                    onChange={this.handleChange}
+                                    value={this.state.password} /><br />
+                                <Button onClick={this.handleConnect} secondary><Icon name={this.state.isConnected ? 'check' : 'ban'} /> Connect</Button>
+                                <Button content="Reload" onClick={this.handleReload(clusterDefinition.validate, connectionState.update)} primary />
+                            </form>
+                        )}
+                    </ConnectionStateContext.Consumer>
+                )}
+            </ClusterDefinitionContext.Consumer>
         );
     }
 }

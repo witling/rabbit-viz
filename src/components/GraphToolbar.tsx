@@ -10,21 +10,28 @@ const GraphToolbar = () => (
         {clusterDefinition => (
           clusterDefinition.definition.vhosts.length > 0 ? (
             <Menu attached="top">
-              {VHostMenu(clusterDefinition.definition.vhosts, viewState.currentVhost, viewState.selectVhost)}      
-              <Menu.Item>              
-                <Radio 
-                  toggle={true} 
+              {VHostMenu(clusterDefinition.definition.vhosts, viewState.currentVhost, viewState.selectVhost)}
+              <Menu.Item>
+                <Radio
+                  toggle={true}
                   label="Show Routing Keys"
                   onChange={viewState.toggleShowRoutingKeys}
                   checked={viewState.showRoutingKeys} />
               </Menu.Item>
               <Menu.Item>
-                <Button 
-                  onClick={viewState.zoomToFit} 
+                <Radio
+                  toggle={true}
+                  label="Show Connections"
+                  onChange={viewState.toggleShowConnections}
+                  checked={viewState.showConnections} />
+              </Menu.Item>
+              <Menu.Item>
+                <Button
+                  onClick={viewState.zoomToFit}
                   content="Zoom to Fit" />
               </Menu.Item>
             </Menu>
-          ) : "" 
+          ) : ""
         )}
       </ClusterDefinitionContext.Consumer>
     )}
@@ -36,21 +43,21 @@ function VHostMenu(vhosts: IVhost[], currentVhost: string, onChange: (evt, data)
 
   return (
     <Menu.Item>
-      Virtual Host:&nbsp;              
-      <Dropdown 
-        placeholder="Virtual Hosts" 
-        value={currentVhost} 
-        selection={true} 
-        options={options} 
+      Virtual Host:&nbsp;
+      <Dropdown
+        placeholder="Virtual Hosts"
+        value={currentVhost}
+        selection={true}
+        options={options}
         onChange={onChange} />
     </Menu.Item>
   );
 }
 
 function generateVhostOptions(vhosts: IVhost[]) {
-  const options = [{ key: "All", value: "All", text: "All"}];
+  const options = [{ key: "All", value: "All", text: "All" }];
 
-  vhosts.forEach(vhost => options.push({key: vhost.name, value: vhost.name, text: vhost.name}));
+  vhosts.forEach(vhost => options.push({ key: vhost.name, value: vhost.name, text: vhost.name }));
 
   return options;
 }

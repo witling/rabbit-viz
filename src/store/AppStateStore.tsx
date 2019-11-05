@@ -1,22 +1,25 @@
 import produce from 'immer';
 import * as React from 'react';
 import { createDefaultClusterDefinition, IClusterDefinition, IDefinition } from './ClusterDefinition';
-import { ClusterDefinitionContext, ViewStateContext } from './Contexts';
+import { ConnectionStateContext, ClusterDefinitionContext, ViewStateContext } from './Contexts';
+import { createDefaultConnectionState, IConnectionState } from './Connection';
 import { createDefaultViewState, IViewState } from './ViewState';
 
 interface IAppState {
   clusterDefinition: IClusterDefinition,
-  viewState: IViewState
+  viewState: IViewState,
+  connectionState: IConnectionState,
 }
 
 export default class AppStateStore extends React.Component<{}, IAppState> {
   constructor(props) {
     super(props);
-    
+
     this.state = {
       clusterDefinition: produce<IClusterDefinition>(createDefaultClusterDefinition(), draft => {
         draft.validate = this.validateDefinitionsJson.bind(this)
       }),
+
       viewState: produce<IViewState>(createDefaultViewState(), draft => {
         draft.selectVhost = (evt, data) => {
           this.setState(produce<IAppState>(next => {
@@ -35,23 +38,39 @@ export default class AppStateStore extends React.Component<{}, IAppState> {
             next.viewState.showRoutingKeys = !next.viewState.showRoutingKeys;
           }));
         };
-      })
+
+        draft.toggleShowConnections = () => {
+          this.setState(produce<IAppState>(next => {
+            next.viewState.showConnections = !next.viewState.showConnections;
+          }))
+        };
+      }),
+
+      connectionState: produce<IConnectionState>(createDefaultConnectionState(), draft => {
+        draft.update = (consumers) => {
+          this.setState(produce<IAppState>(next => {
+            next.connectionState.consumers = consumers;
+          }));
+        };
+      }),
     }
   }
 
-  public render(){
+  public render() {
     return (
       <ViewStateContext.Provider value={this.state.viewState}>
         <ClusterDefinitionContext.Provider value={this.state.clusterDefinition}>
-          {this.props.children}
+          <ConnectionStateContext.Provider value={this.state.connectionState}>
+            {this.props.children}
+          </ConnectionStateContext.Provider>
         </ClusterDefinitionContext.Provider>
       </ViewStateContext.Provider>
     );
   }
 
   private validateDefinitionsJson(editor: any, data: any, value: string) {
-    if(value.length > 0) {
-       try {
+    if (value.length > 0) {
+      try {
         const valueJson = JSON.parse(value);
 
         valueJson.vhosts = valueJson.vhosts.sort((v1, v2) => {
@@ -71,7 +90,7 @@ export default class AppStateStore extends React.Component<{}, IAppState> {
           draft.viewState.errors = [(error as Error).message];
           draft.clusterDefinition.definition = {
             bindings: [],
-            exchanges: [],      
+            exchanges: [],
             parameters: [],
             policies: [],
             queues: [],
@@ -87,7 +106,7 @@ export default class AppStateStore extends React.Component<{}, IAppState> {
         draft.viewState.errors = [];
         draft.clusterDefinition.definition = {
           bindings: [],
-          exchanges: [],      
+          exchanges: [],
           parameters: [],
           policies: [],
           queues: [],

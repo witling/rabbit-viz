@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { UnControlled as CodeMirror } from 'react-codemirror2';
+//import { UnControlled as CodeMirror } from 'react-codemirror2';
 
 import { ClusterDefinitionContext } from '../store/Contexts';
 import LoadPanel from './LoadPanel';
@@ -24,8 +24,8 @@ class DefinitionsEditor extends React.Component<{}, IEditorState> {
       <ClusterDefinitionContext.Consumer>
         {clusterDefinition => (
           <div>
-            <LoadPanel reloadCallback={(code) => this.setState({ code: JSON.stringify(code, null, '\t') }) } />
-            <CodeMirror
+            <LoadPanel />
+            {/*<CodeMirror
               value={this.state.code}
               options={{
                 lineNumbers: true,
@@ -33,6 +33,7 @@ class DefinitionsEditor extends React.Component<{}, IEditorState> {
                 theme: 'material'
               }}
               onChange={clusterDefinition.validate} />
+              */}
           </div>
         )}
       </ClusterDefinitionContext.Consumer>

@@ -4,7 +4,8 @@ import * as SRD from 'storm-react-diagrams';
 import 'storm-react-diagrams/dist/style.min.css';
 
 import { clusterDefinitionToDagModel, IClusterDefinition } from '../store/ClusterDefinition';
-import { ClusterDefinitionContext, ViewStateContext } from '../store/Contexts';
+import { ClusterDefinitionContext, ViewStateContext, ConnectionStateContext } from '../store/Contexts';
+import { IConnectionState } from '../store/Connection';
 import { IViewState } from '../store/ViewState';
 
 class DefinitionsGraph extends React.Component {
@@ -23,12 +24,16 @@ class DefinitionsGraph extends React.Component {
     return (
       <ViewStateContext.Consumer>
         {viewState => (
-          <ClusterDefinitionContext.Consumer>
-            {clusterDefinition => 
-              clusterDefinition.definition.vhosts.length > 0 ? 
-                this.renderDefinitionDiagram(clusterDefinition, viewState) : this.renderMessageBox(viewState)                
+          <ConnectionStateContext.Consumer>
+            {connectionState =>
+              <ClusterDefinitionContext.Consumer>
+                {clusterDefinition =>
+                  clusterDefinition.definition.vhosts.length > 0 ?
+                    this.renderDefinitionDiagram(clusterDefinition, viewState, connectionState) : this.renderMessageBox(viewState)
+                }
+              </ClusterDefinitionContext.Consumer>
             }
-          </ClusterDefinitionContext.Consumer>          
+          </ConnectionStateContext.Consumer>
         )}
       </ViewStateContext.Consumer>
     )
@@ -37,8 +42,8 @@ class DefinitionsGraph extends React.Component {
   private renderMessageBox(viewState: IViewState) {
     const engine = new SRD.DiagramEngine();
     engine.installDefaultFactories();
-    
-    if(viewState.errors.length > 0) {
+
+    if (viewState.errors.length > 0) {
       return (
         <Message
           error={true}
@@ -50,7 +55,7 @@ class DefinitionsGraph extends React.Component {
     }
 
     return (
-      <Message 
+      <Message
         content="Please load a broker definition using the editor panel."
         header="No Broker Definition Present"
         info={true}
@@ -59,21 +64,21 @@ class DefinitionsGraph extends React.Component {
     );
   }
 
-  private renderDefinitionDiagram(clusterDefinition: IClusterDefinition, viewState: IViewState) {
-    const model = clusterDefinitionToDagModel(clusterDefinition.definition, viewState, this.engine);
+  private renderDefinitionDiagram(clusterDefinition: IClusterDefinition, viewState: IViewState, connectionState: IConnectionState) {
+    const model = clusterDefinitionToDagModel(clusterDefinition.definition, viewState, this.engine, connectionState);
     this.engine.setDiagramModel(model);
 
-    if(!this.zoomFunctionSet) {
+    if (!this.zoomFunctionSet) {
       viewState.setZoomFunction(() => {
         this.engine.zoomToFit();
       });
       this.zoomFunctionSet = true;
     }
 
-    return <SRD.DiagramWidget 
-              className="srd-canvas" 
-              diagramEngine={this.engine} 
-              inverseZoom={true} />;
+    return <SRD.DiagramWidget
+      className="srd-canvas"
+      diagramEngine={this.engine}
+      inverseZoom={true} />;
   }
 }
 
