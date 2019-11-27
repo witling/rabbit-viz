@@ -40,9 +40,9 @@ class LoadPanel extends React.Component<{}, ILoadPanelState> {
         this.handleReload = this.handleReload.bind(this);
     }
 
-    componentDidMount() {
-        this.connect();
-        this.reload();
+    async componentDidMount() {
+        await this.connect();
+
     }
 
     async connect() {
@@ -60,9 +60,11 @@ class LoadPanel extends React.Component<{}, ILoadPanelState> {
             await apiClient.request({ method: 'get', url: 'definitions' });
 
             this.setState({ apiClient, isConnected: true });
+
             console.log('connection successful...');
         } catch {
             this.setState({ isConnected: false });
+
             console.log('connection failed...');
         }
     }
