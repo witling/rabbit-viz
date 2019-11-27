@@ -1,17 +1,26 @@
 {
-  "main.css": "/rabbit-viz/static/css/main.51063ea1.chunk.css",
-  "main.js": "/rabbit-viz/static/js/main.18299808.chunk.js",
-  "main.js.map": "/rabbit-viz/static/js/main.18299808.chunk.js.map",
-  "runtime~main.js": "/rabbit-viz/static/js/runtime~main.38a6d8d0.js",
-  "runtime~main.js.map": "/rabbit-viz/static/js/runtime~main.38a6d8d0.js.map",
-  "static/css/2.7eb5f256.chunk.css": "/rabbit-viz/static/css/2.7eb5f256.chunk.css",
-  "static/js/2.d27d3e24.chunk.js": "/rabbit-viz/static/js/2.d27d3e24.chunk.js",
-  "static/js/2.d27d3e24.chunk.js.map": "/rabbit-viz/static/js/2.d27d3e24.chunk.js.map",
-  "index.html": "/rabbit-viz/index.html",
-  "precache-manifest.6362b90c04f1ae1ff5100ad2c370124e.js": "/rabbit-viz/precache-manifest.6362b90c04f1ae1ff5100ad2c370124e.js",
-  "service-worker.js": "/rabbit-viz/service-worker.js",
-  "static/css/2.7eb5f256.chunk.css.map": "/rabbit-viz/static/css/2.7eb5f256.chunk.css.map",
-  "static/css/main.51063ea1.chunk.css.map": "/rabbit-viz/static/css/main.51063ea1.chunk.css.map",
-  "static/media/semantic.min.css": "/rabbit-viz/static/media/outline-icons.ef60a4f6.woff",
-  "static/media/logo.svg": "/rabbit-viz/static/media/logo.3938d65c.svg"
+  "files": {
+    "main.css": "/rabbit-viz/static/css/main.b817b681.chunk.css",
+    "main.js": "/rabbit-viz/static/js/main.f5ab2119.chunk.js",
+    "main.js.map": "/rabbit-viz/static/js/main.f5ab2119.chunk.js.map",
+    "runtime-main.js": "/rabbit-viz/static/js/runtime-main.c7af1dc7.js",
+    "runtime-main.js.map": "/rabbit-viz/static/js/runtime-main.c7af1dc7.js.map",
+    "static/css/2.c6ac4b4c.chunk.css": "/rabbit-viz/static/css/2.c6ac4b4c.chunk.css",
+    "static/js/2.8277b54d.chunk.js": "/rabbit-viz/static/js/2.8277b54d.chunk.js",
+    "static/js/2.8277b54d.chunk.js.map": "/rabbit-viz/static/js/2.8277b54d.chunk.js.map",
+    "index.html": "/rabbit-viz/index.html",
+    "precache-manifest.adb297aa68fb232abd1b0f1a7f446ccd.js": "/rabbit-viz/precache-manifest.adb297aa68fb232abd1b0f1a7f446ccd.js",
+    "service-worker.js": "/rabbit-viz/service-worker.js",
+    "static/css/2.c6ac4b4c.chunk.css.map": "/rabbit-viz/static/css/2.c6ac4b4c.chunk.css.map",
+    "static/css/main.b817b681.chunk.css.map": "/rabbit-viz/static/css/main.b817b681.chunk.css.map",
+    "static/media/semantic.min.css": "/rabbit-viz/static/media/outline-icons.ef60a4f6.woff",
+    "static/media/logo.svg": "/rabbit-viz/static/media/logo.3938d65c.svg"
+  },
+  "entrypoints": [
+    "static/js/runtime-main.c7af1dc7.js",
+    "static/css/2.c6ac4b4c.chunk.css",
+    "static/js/2.8277b54d.chunk.js",
+    "static/css/main.b817b681.chunk.css",
+    "static/js/main.f5ab2119.chunk.js"
+  ]
 }
