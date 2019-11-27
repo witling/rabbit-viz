@@ -13,7 +13,7 @@ jobs:
     - name: Initial Checks
       shell: powershell
       run: |
-        if ( ${{ github.event.ref_type }} -ne 'tag' ) { exit 1; }
+        if ( '${{ github.event.ref_type }}' -ne 'tag' ) { exit 1; }
         echo ${{ github.event }}
         echo "::set-env name=RELEASE_TAG::${{ github.event.ref }}"
         echo "All Checks succeeded"
