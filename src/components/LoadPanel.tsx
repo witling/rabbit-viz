@@ -42,7 +42,6 @@ class LoadPanel extends React.Component<{}, ILoadPanelState> {
 
     async componentDidMount() {
         await this.connect();
-
     }
 
     async connect() {

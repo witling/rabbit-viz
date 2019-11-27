@@ -1,0 +1,38 @@
+name: Build
+
+# run whenever a new tag was created on master
+on:
+  create
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - name: Initial Checks
+      shell: powershell
+      run: |
+        if ( ${{ github.event.ref_type }} -ne 'tag' ) { exit 1; }
+        echo ${{ github.event }}
+        echo "::set-env name=RELEASE_TAG::${{ github.event.ref }}"
+        echo "All Checks succeeded"
+    
+    - name: Starting Build
+      run: |
+        echo "Version ${{ env.RELEASE_TAG }}"
+
+    - name: Checkout Repository
+      uses: actions/checkout@v1
+      with:
+        ref: master
+
+    - run: npm install
+    - run: npm run deploy
+    #- run: git clone https://github.com/witling/rabbit-viz -b gh-pages build
+    #- run: npm run build
+
+    #- run: cd build
+    #- run: git add *
+    #- run: git commit -m "release ${{ env.RELEASE_TAG }}"
+    #- run: git push 
