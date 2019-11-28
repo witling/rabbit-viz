@@ -13,6 +13,12 @@ Rabbit Viz is a tool for visualizing [RabbitMQ](https://www.rabbitmq.com/) broke
 - exchanges
 - bindings
 
+## Setup
+
+``` sh
+git clone https://github.com/witling/rabbit-viz -b gh-pages
+```
+
 ## Running the project
 
 Running the project is as simple as running
